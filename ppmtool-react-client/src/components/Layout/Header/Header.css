@@ -1,0 +1,31 @@
+.header {
+    background: #007bff;
+    display: flex;
+    flex-direction: row;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.header .header--logo {
+    flex: 1;
+    font-size: 20px;
+}
+
+.header .header--content {
+    flex: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header .header--content .user-form {
+    margin-right: 20px;
+    display: flex;
+}
+
+.header .header--content .user-form * {
+    margin-right: 30px;
+
+}
