@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,18 +31,18 @@ public class ProjectController {
 
     //creat
     @PostMapping("")
-    public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result) {
+    public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result, Principal principal) {
         final Optional<ResponseEntity<?>> optionalResponseEntity = mapValidationErrorService.mapValidationService(result);
         return optionalResponseEntity.orElseGet(() ->
                 new ResponseEntity<>(
-                        projectService.saveOrUpdateProject(project),
+                        projectService.saveOrUpdateProject(project, principal.getName()),
                         HttpStatus.CREATED));
     }
 
     //read
     @GetMapping("/{projectId}")
-    public ResponseEntity<?> getProjectById(@PathVariable String projectId) {
-        final Project projectByIdentifier = projectService.findProjectByIdentifier(projectId);
+    public ResponseEntity<?> getProjectById(@PathVariable String projectId, Principal principal) {
+        final Project projectByIdentifier = projectService.findProjectByIdentifier(projectId, principal.getName());
         return new ResponseEntity<>(projectByIdentifier, HttpStatus.OK);
     }
 
@@ -55,8 +56,8 @@ public class ProjectController {
 
     //delete
     @DeleteMapping("/{projectId}")
-    public ResponseEntity<?> deleteProject(@PathVariable String projectId) {
-        projectService.deleteProjectByIdentifier(projectId.toUpperCase());
+    public ResponseEntity<?> deleteProject(@PathVariable String projectId, Principal principal) {
+        projectService.deleteProjectByIdentifier(projectId.toUpperCase(), principal.getName());
         return new ResponseEntity<>("[projectId : " + projectId + "] 가 삭제되었습니다.", HttpStatus.OK);
     }
 

@@ -3,9 +3,9 @@ import {DELETE_PROJECT, GET_ERRORS, GET_PROJECT, GET_PROJECTS} from "./types";
 
 
 export const createOrUpdateProject = (project, history) => async dispatch => {
-    Axios.post("/api/project", project)
+    Axios.post("/api/projectTask", project)
         .then(res => {
-            history.push("/project")
+            history.push("/projectTask")
         }).catch(e => {
         dispatch({
             type: GET_ERRORS,
@@ -23,7 +23,7 @@ export const getProject = (id, history) => dispatch => {
             payload: value
         })
     }).catch(e => {
-        history.push("/project")
+        history.push("/projectTask")
     });
 };
 export const getProjects = () => dispatch => {

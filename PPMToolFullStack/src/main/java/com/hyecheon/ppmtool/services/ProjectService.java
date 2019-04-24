@@ -2,27 +2,43 @@ package com.hyecheon.ppmtool.services;
 
 import com.hyecheon.ppmtool.domain.Backlog;
 import com.hyecheon.ppmtool.domain.Project;
+import com.hyecheon.ppmtool.domain.User;
 import com.hyecheon.ppmtool.exceptions.ProjectIdException;
+import com.hyecheon.ppmtool.exceptions.ProjectNotFoundException;
 import com.hyecheon.ppmtool.repositories.BacklogRepository;
 import com.hyecheon.ppmtool.repositories.ProjectRepository;
+import com.hyecheon.ppmtool.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Slf4j
 @Service
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final BacklogRepository backlogRepository;
+    private final UserRepository userRepository;
 
-    public ProjectService(ProjectRepository projectRepository, BacklogRepository backlogRepository) {
-        this.projectRepository = projectRepository;
-        this.backlogRepository = backlogRepository;
-    }
+    public Project saveOrUpdateProject(Project project, String username) {
+        if (project.getId() != null) {
+            final Optional<Project> optionalProject = projectRepository.findByProjectIdentifier(project.getProjectIdentifier());
+            if (optionalProject.isPresent()) {
+                final Project existingProject = optionalProject.get();
+                if (existingProject.getUser().getUsername().equals(username)) {
+                    throw new ProjectNotFoundException("Project not found in your account");
+                }
+            } else {
+                throw new ProjectNotFoundException("Project with Id: " + project.getProjectIdentifier() + " cannot be updated because it doesn't exist");
+            }
+        }
 
-    public Project saveOrUpdateProject(Project project) {
         try {
+            final User user = userRepository.findByUsername(username);
+            project.setUser(user);
+            project.setProjectLeader(user.getUsername());
             project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
             //create
             if (project.getId() == null) {
@@ -48,11 +64,16 @@ public class ProjectService {
     }
 
 
-    public Project findProjectByIdentifier(String projectId) {
+    public Project findProjectByIdentifier(String projectId, String username) {
         try {
             final Optional<Project> optionalProject = projectRepository.findByProjectIdentifier(projectId.toUpperCase());
             if (optionalProject.isPresent()) {
-                return optionalProject.get();
+
+                final Project project = optionalProject.get();
+                if (!project.getProjectLeader().equals(username)) {
+                    throw new ProjectNotFoundException("Project not found in your account");
+                }
+                return project;
             } else {
                 throw new ProjectIdException("[" + projectId + "] 를 확인해 주세요");
             }
@@ -69,16 +90,7 @@ public class ProjectService {
         }
     }
 
-    public void deleteProjectByIdentifier(String projectId) {
-        try {
-            final Optional<Project> optionalProject = projectRepository.findByProjectIdentifier(projectId);
-            if (optionalProject.isPresent()) {
-                projectRepository.delete(optionalProject.get());
-            } else {
-                throw new ProjectIdException("[" + projectId + "] 를 확인해 주세요");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public void deleteProjectByIdentifier(String projectId, String username) {
+        projectRepository.delete(findProjectByIdentifier(projectId, username));
     }
 }

@@ -38,6 +38,12 @@ public class Project {
     @JsonIgnore
     private Backlog backlog;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private User user;
+
+    private String projectLeader;
+
     @org.jetbrains.annotations.Contract(pure = true)
     public Project() {
     }

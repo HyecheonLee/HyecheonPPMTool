@@ -12,7 +12,7 @@ class Project extends Component {
     }
 
     render() {
-        const {projects} = this.props.project;
+        const {projects} = this.props.projectTask;
         return (
             <div className="projects">
                 <div className="container">
@@ -37,12 +37,12 @@ class Project extends Component {
 }
 
 Project.propTypes = {
-    project: PropTypes.object.isRequired,
+    projectTask: PropTypes.object.isRequired,
     getProjects: PropTypes.func,
     deleteProject: PropTypes.func,
 
 };
 const mapStateToProps = state => ({
-    project: state.project,
+    projectTask: state.projectTask,
 });
 export default connect(mapStateToProps, {getProjects, deleteProject})(Project);

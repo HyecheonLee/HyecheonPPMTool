@@ -2,7 +2,7 @@ import {DELETE_PROJECT, GET_PROJECT, GET_PROJECTS} from "../actions/types";
 
 const initialState = {
     projects: [],
-    project: {},
+    projectTask: {},
 };
 
 export default function (state = initialState, action) {

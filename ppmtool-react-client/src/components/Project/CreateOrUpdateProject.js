@@ -27,7 +27,7 @@ class CreateOrUpdateProject extends Component {
             this.setState({
                 isUpdate: true
             });
-            const findProject = this.props.project.projects.find(project => project.projectIdentifier === match.params.id);
+            const findProject = this.props.projectTask.projects.find(project => project.projectIdentifier === match.params.id);
             if (!findProject) {
                 this.props.getProject(match.params.id, this.props.history);
             } else {
@@ -64,9 +64,9 @@ class CreateOrUpdateProject extends Component {
                 errors: nextProps.errors,
             });
         }
-        if (nextProps.project) {
+        if (nextProps.projectTask) {
             this.setState({
-                ...nextProps.project.project,
+                ...nextProps.projectTask.projectTask,
             });
         }
     }
@@ -162,7 +162,7 @@ CreateOrUpdateProject.propTyes = {
 };
 const mapStateToProps = state => ({
     errors: state.errors,
-    project: state.project,
+    projectTask: state.projectTask,
 });
 
 export default connect(mapStateToProps, {
